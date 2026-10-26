@@ -1,0 +1,9 @@
+```mermaid
+flowchart LR
+    NAME[Input name] --> NORM[normalize: lower-case, de-accent, strip punctuation]
+    NORM --> VAR[generate spelling variants]
+    VAR --> SCORE[best fuzzy score vs each list entry]
+    SCORE -->|score >= 0.75| HIT[hit: escalate to human]
+    SCORE -->|score < 0.75| NOHIT[no hit]
+    HIT --> QUEUE[human review queue]
+```

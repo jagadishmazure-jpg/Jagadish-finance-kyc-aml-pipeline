@@ -1,0 +1,17 @@
+```mermaid
+sequenceDiagram
+    participant C as Chain
+    participant S as Source record
+    participant A as Audit log
+    C->>S: re-read grounded facts (identity)
+    C->>A: append step:identity
+    C->>S: re-read grounded facts (sanctions)
+    C->>A: append step:sanctions
+    C->>S: re-read grounded facts (PEP)
+    C->>A: append step:pep
+    C->>S: re-read grounded facts (risk)
+    C->>A: append step:risk
+    C->>S: re-read grounded facts (decision)
+    C->>A: append decision
+    Note over C: any drift vs verified facts fails the chain to human review
+```

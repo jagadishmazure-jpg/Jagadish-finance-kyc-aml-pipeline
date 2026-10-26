@@ -1,0 +1,18 @@
+```mermaid
+flowchart TD
+    SRC[Synthetic customer record] --> ID[identity]
+    ID --> SAN[sanctions screening]
+    SAN --> PEP[PEP screening]
+    PEP --> RISK[risk rating]
+    RISK --> DEC[decision]
+    SAN --> ESC[human review queue]
+    PEP --> ESC
+    DEC --> ESC
+    ID --> AUD[hash-chained audit log]
+    SAN --> AUD
+    PEP --> AUD
+    RISK --> AUD
+    DEC --> AUD
+    ESC --> GATE[confirmation gate]
+    STORE[(SQLite views only)] --> DEC
+```
