@@ -23,11 +23,14 @@ class EmailChannel:
     def notify_review(self, case_id: str, reason: str) -> dict:
         message = redact_text(
             f"Human review requested for case {case_id}: {reason}")
+        # Dry-run first: it transmits nothing, so it must never raise,
+        # even when the runner sets CI. The CI refusal below only guards
+        # the non-dry-run path, which is what it was meant to guard.
+        if self.dry_run:
+            record = {"to": "review-queue@fictional.invalid", "body": message}
+            self.sent.append(record)
+            return record
         if os.environ.get("CI"):
             raise RuntimeError("refusing to send email in CI")
-        if not self.dry_run:
-            raise RuntimeError(
-                "live sending is not implemented; use dry_run=True")
-        record = {"to": "review-queue@fictional.invalid", "body": message}
-        self.sent.append(record)
-        return record
+        raise RuntimeError(
+            "live sending is not implemented; use dry_run=True")

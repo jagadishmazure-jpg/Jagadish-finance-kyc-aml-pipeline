@@ -118,9 +118,20 @@ def test_email_dry_run_records_redacted_notice():
 
 
 def test_email_refused_in_ci(monkeypatch):
+    # The meaningful CI case is the non-dry-run path: a dry run
+    # transmits nothing, so it must not raise (see the dry-run-in-CI
+    # test below). CI must still refuse the non-dry-run path.
     monkeypatch.setenv("CI", "true")
     with pytest.raises(RuntimeError):
-        EmailChannel().notify_review("C1", "review")
+        EmailChannel(dry_run=False).notify_review("C1", "review")
+
+
+def test_email_dry_run_records_even_in_ci(monkeypatch):
+    # Regression: the runner sets CI, and a dry run must still return
+    # its record instead of raising, because it transmits nothing.
+    monkeypatch.setenv("CI", "true")
+    record = EmailChannel().notify_review("C1", "review")
+    assert record["to"] == "review-queue@fictional.invalid"
 
 
 def test_email_live_send_not_implemented():
